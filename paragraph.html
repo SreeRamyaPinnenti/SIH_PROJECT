@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Exploring Chart.js</title>
+    <script src="https://www.gstatic.com/firebasejs/5.8.3/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCRHBD_txj2x7md7jUZ_LvhVL57OyeStDc",
+    authDomain: "sihstpsvecw.firebaseapp.com",
+    databaseURL: "https://sihstpsvecw.firebaseio.com",
+    projectId: "sihstpsvecw",
+    storageBucket: "sihstpsvecw.appspot.com",
+    messagingSenderId: "494848378783"
+  };
+  firebase.initializeApp(config);
+</script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>function fun(stpArr){
+      var x=document.getElementById('select')
+      var y=document.getElementById('select1')
+     // alert(x.value+"         "+y.value);
+      var some = y.value;
+      //alert(some);
+      //alert(y.value+" "+stpArr[x.selectedIndex])
+       var rootRef = firebase.database().ref().child("stp/"+stpArr[x.selectedIndex]);
+       var rawArr=[];
+       var treatedArr=[];
+  rootRef.once("value", function(snapshot) {
+   
+    //document.write(JSON.stringify(snapshot));
+  snapshot.forEach(function(child) {
+
+     var childVal = JSON.stringify(child.val().raw);
+      // if(child.val().date == y.value){
+      //   //document.write("fghjk");
+        //console.log(child.val().raw.ph)
+        //myFunction2(child.val().raw.ph);
+        rawArr.push(child.val().raw[some]);
+        
+        //  alert(child.val().raw.ph)
+        //  alert(child.val().raw[some])
+        // // rawArr.push(child.val().raw.ph);
+        // rawArr.push(child.val().raw.tds);
+        //  rawArr.push(child.val().raw.temperature);
+       
+        // treatedArr.push(child.val().treated.do);
+        // treatedArr.push(child.val().treated.ph);
+        // treatedArr.push(child.val().treated.temperature);
+        treatedArr.push(child.val().treated[some]);
+        
+        //myFunction2(child.val().raw.temperature);
+        //document.write(phar);
+        console.log(rawArr+" "+treatedArr)
+        myFunction2(rawArr,treatedArr);
+
+      //}
+
+  });
+  
+});
+}
+ function  myFunction2(rawArr,treatedArr){
+//    new Chart(document.getElementById("bar-chart-grouped"), {
+//     type: 'bar',
+//     data: {
+//       labels: ["ph", "Temperature", "DO", "TDS"],
+//       datasets: [
+//         {
+//           label: "RAW",
+//           backgroundColor: "#3e95cd",
+//           data:rawArr
+//         }, {
+//           label: "TREATED",
+//           backgroundColor: "#8e5ea2",
+//           data: treatedArr
+//         }
+//       ]
+//     },
+//     options: {
+//       title: {
+//         display: true,
+//         text: 'Population growth (millions)'
+//       }
+//     }
+// });
+
+
+    var speedCanvas = document.getElementById("speedChart");
+        //alert(rawArr);
+Chart.defaults.global.defaultFontFamily = "Lato";
+Chart.defaults.global.defaultFontSize = 18;
+
+var dataFirst = {
+    label: "RAW WATER",
+    data: rawArr,
+    lineTension: 0.3,
+    fill: false,
+    borderColor: 'red',
+    backgroundColor: 'transparent',
+    pointBorderColor: 'red',
+    pointBackgroundColor: 'lightgreen',
+    pointRadius: 5,
+    pointHoverRadius: 15,
+    pointHitRadius: 30,
+    pointBorderWidth: 2,
+    pointStyle: 'rect'
+  };
+
+var dataSecond = {
+    label: "TREATED WATER",
+    data: treatedArr,
+    lineTension: 0.3,
+    fill: false,
+    borderColor: 'purple',
+    backgroundColor: 'transparent',
+    pointBorderColor: 'purple',
+    pointBackgroundColor: 'lightgreen',
+    pointRadius: 5,
+    pointHoverRadius: 15,
+    pointHitRadius: 30,
+    pointBorderWidth: 2
+  };
+var dataThird = {
+    label: "STANDARD VALUES",
+    data: ["123","22","210","90"],
+    lineTension: 0.3,
+    fill: false,
+    borderColor: 'green',
+    backgroundColor: 'transparent',
+    pointBorderColor: 'yellow',
+    pointBackgroundColor: 'lightgreen',
+    pointRadius: 5,
+    pointHoverRadius: 15,
+    pointHitRadius: 30,
+    pointBorderWidth: 2
+  };
+
+var speedData = {
+  labels: [],
+  datasets: [dataFirst, dataSecond,dataThird]
+};
+
+var chartOptions = {
+  legend: {
+    display: true,
+    position: 'top',
+    labels: {
+      boxWidth: 80,
+      fontColor: 'black'
+    }
+  }
+};
+
+var lineChart = new Chart(speedCanvas, {
+  type: 'line',
+  data: speedData,
+  options: chartOptions
+});
+}
+
+</script>
+</head>
+<style>
+    .container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 300px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.login
+{
+color :black;
+padding:10px 20px;
+text-align:center;
+text-decoration:none;
+display:inline-block;
+font-size:40px
+margin:4px 2px;
+cursor:pointer;
+}
+</style>
+
+<body>
+  <div align="center">
+    <table><tr><td>
+        SELECT STP</td><td><select id="select" onselect="fun(this.selectedIndex)"class ="login"></select></td></tr>
+<tr><td>SELECT PARAMETER</td><td><select id="select1" onselect="fun(this.selectedIndex)" class="login">
+  <option>ph</option>
+  <option>do</option>
+  <option>tds</option>
+  <option>temperature</option>
+</select></td></tr>
+<tr><td align = "center"><button id="renderBtn" onclick="fun(stpArr,pArr)">
+        Render
+    </button></td></tr></table>
+</div>
+<br><br>
+<script type="text/javascript">
+  var pArr = ["ph","do","tds","temperature"];
+var stpArr=[];
+    //function myFun(){
+      var rootRef = firebase.database().ref().child("stp");
+       rootRef.once("value", function(snapshot) {
+        
+    
+        //document.write(snapshot.key);
+       snapshot.forEach(function(child) {
+              // document.write(JSON.stringify(child));
+               stpArr.push(child.key);
+               //console.log(x);
+      
+  });
+       // document.write(stpArr);
+       //alert(stpArr);
+
+        var selectBox = document.getElementById('select');
+
+for(var i = 0, l = stpArr.length; i < l; i++){
+
+selectBox.options.add( new Option(stpArr[i]));
+}
+
+});
+    //alert(stpArr);  
+
+//}
+
+//var stpArr=["stp1","stp2","stp3","stp4"];
+//alert(stpArr);
+
+</script>
+
+
+    <div class="container" style="width: 50%;height:100%;float: left;" align="center">
+       <canvas id="speedChart" ></canvas>    </div>
+       <!-- <div class="container" style="width: 50%;height:100%;float: left;" >
+       <canvas id="speedChart1" ></canvas>    </div>
+     -->
+    <!-- <div class="container" style="width: 50%;height:100%;float: left;">
+        <canvas id="bar-chart-grouped" ></canvas>    
+</div>
+ -->
+</body>
+
+
+</html>
